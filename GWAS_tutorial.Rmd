@@ -1,0 +1,55 @@
+---
+title: "GWAS tutorial"
+author: "Eryn McFarlane"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Learning outcomes of GWAS tutorial
+1) Understand what a GWAS is, and how to run it in GEMMA
+2) Think about specific predictions for GWAS, and what we really expect to see for most of them
+3) Think critically about when GWAS are robust, and when they should be taken skeptically
+
+```{r simulations}
+### This is from Alex Buerkle's Population Genetics lab notes
+###simulate some data
+set.seed(42)
+nloci<-10000  ## we will have data from nloci
+nind<-2000  ## we will have data from nind that were sampled from the true population
+sim.theta<-5  # high parameter means high polymorphism, must be positive and > zero
+
+## simulate allele frequencies at nloci number of loci, by random draws from a beta
+sim.p<-rbeta(nloci, sim.theta, sim.theta)
+hist(sim.p, breaks=seq(0,1,0.1))
+
+# simulate genotypes in the sample
+sim.x <- matrix(rbinom(nloci*nind, 2, prob=sim.p), nrow=nind, ncol=nloci) ### this gives us individuals in rows and snps in columns
+str(sim.x)
+### this is like the .ped set up, but not entirely. @ERYN - go back to this to make it the bimbam right away so it fits in GEMMA from the start.
+
+###some things to note - these are assumed to be independent. This isn't realistic, there would certainly be LD
+### I haven't simulated chromosomes, just allele frequencies
+
+### one more thing to simulate is the phenotypes, and the number of markers that they're based one.
+
+### let's do one that's categorical and based on one SNP, like the horn traits in soay sheep
+
+y_cat<-as.factor(ifelse((5+0.3*sim.x[,15]+rnorm(2000, 0, 1))<4, 'no horn', ifelse((5+0.3*sim.x[,15]+rnorm(2000, 0, 1))>6.5, 'big horn', 'small horn'))) ### this is just a linear relationship between SNP 15 and this variable, plus error, that I've then put into categories
+
+summary(lm(y_cat~sim.x[,15])) ###that's pretty good! Note that I've introduced a lot of error!
+
+y_quant<-0.1*sim.x[,10]+0.1*sim.x[,20]+0.1*sim.x[,30]+0.1*sim.x[,40]-0.1*sim.x[,50]-0.1*sim.x[,60]-0.1*sim.x[,70]+0.1*sim.x[,80]+0.1*sim.x[,90]+0.1*sim.x[,100]+rnorm(2000, 0, 5)
+
+hist(y_quant)
+
+```
+
+
+```{r basic gemma, echo=FALSE}
+
+```
+
