@@ -1,0 +1,54 @@
+---
+title: "How to GWAS - ConGen 2022"
+author: "Eryn McFarlane"
+date: "`r Sys.Date()`"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is GWAS?
+
+Genome Wide Association Study
+
+- y = a + bx + g + e
+- y: phenotype
+- b: fixed effect
+- x: the SNP predictor coded as 0, 1, 2
+- g: the polygenic random effect (e.g. Kinship matrix)
+- e: the error term
+
+## Soay Sheep Horns RXFP2 genotype
+
+Johnson et al. 2011 Mol Ecol, Johnson et al. 2013 Nature
+![](Johnson_Phenotypes.pdf){width=45%} ![](Johnson_Manhatten_plot.pdf){width=65%}
+
+- 486 sheep
+- 35 831 SNPs
+- one huge effect locus, explains 76% of the variation in horn size
+
+
+## What are the expectations for a GWAS?
+
+![](Silva_flycatcher.pdf){width=90%}
+
+- No significant SNPs for morphological traits
+- 3 SNPs explaining ~3% of the variation in clutch size
+
+Silva et al. 2017 Heredity, Husby et al. 2014 Proc B
+
+## Some considerations for GWAS
+
+- heritability of the trait!
+- Linkage Disequilibrium
+- number of individuals sampled
+
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
