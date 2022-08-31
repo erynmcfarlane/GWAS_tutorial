@@ -3,6 +3,8 @@ title: "How to GWAS - ConGen 2022"
 author: "Eryn McFarlane"
 date: "`r Sys.Date()`"
 output: beamer_presentation
+header-includes:
+  - \usepackage{wrapfig}
 ---
 
 ```{r setup, include=FALSE}
@@ -30,6 +32,11 @@ Johnson et al. 2011 Mol Ecol, Johnson et al. 2013 Nature
 - one huge effect locus, explains 76% of the variation in horn size
 
 
+## How often do people find huge effect loci?
+
+- Darwin's finches
+- sticklebacks
+- 
 ## What are the expectations for a GWAS?
 
 ![](Silva_flycatcher.pdf){width=90%}
@@ -41,14 +48,40 @@ Silva et al. 2017 Heredity, Husby et al. 2014 Proc B
 
 ## Some considerations for GWAS
 
-- heritability of the trait!
+\begin{minipage}[t]{.45\linewidth}\centering
+
+
+- heritability of the trait
+
+- genetic architecture of the trait (unknown!)
+
 - Linkage Disequilibrium
+
 - number of individuals sampled
 
 
-## Slide with Plot
-
-```{r pressure}
-plot(pressure)
+\end{minipage}
+\begin{minipage}[t]{.45\linewidth}
+```{r, echo=FALSE, fig.align='right', out.height='120%'}
+knitr::include_graphics("Gompert2017_Figure5.pdf")
 ```
+\end{minipage}
+                          
+Kardos 2015 MER, Gompert 2017 Mol Ecol
+
+## Some solutions
+
+- Sample more individuals!
+
+- replicated samples of individuals (RepeatABEL, RIP)
+
+- Admixture mapping instead of within population GWAS
+
+## What is Admixture mapping?
+
+## Deer Case study
+
+## So what are we doing today?
+
+- Simulated GWAS, using GEMMA
 

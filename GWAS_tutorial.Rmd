@@ -40,16 +40,138 @@ str(sim.x)
 
 y_cat<-as.factor(ifelse((5+0.3*sim.x[,15]+rnorm(2000, 0, 1))<4, 'no horn', ifelse((5+0.3*sim.x[,15]+rnorm(2000, 0, 1))>6.5, 'big horn', 'small horn'))) ### this is just a linear relationship between SNP 15 and this variable, plus error, that I've then put into categories
 
-summary(lm(y_cat~sim.x[,15])) ###that's pretty good! Note that I've introduced a lot of error!
-
 y_quant<-0.1*sim.x[,10]+0.1*sim.x[,20]+0.1*sim.x[,30]+0.1*sim.x[,40]-0.1*sim.x[,50]-0.1*sim.x[,60]-0.1*sim.x[,70]+0.1*sim.x[,80]+0.1*sim.x[,90]+0.1*sim.x[,100]+rnorm(2000, 0, 5)
 
 hist(y_quant)
+
+y_polygenic<-0.0001*sim.x[,11]+
+   0.0001*sim.x[,21]+ 
+  0.0001*sim.x[,31]+ 
+  0.0001*sim.x[,41]+ 
+  0.0001*sim.x[,51]+ 
+  0.0001*sim.x[,61]+ 
+  0.0001*sim.x[,71]+ 
+  0.0001*sim.x[,81]+ 
+  0.0001*sim.x[,91]+ 
+  0.0001*sim.x[,101]+ 
+  0.0001*sim.x[,111]+ 
+  0.0001*sim.x[,121]+ 
+  0.0001*sim.x[,131]+ 
+  0.0001*sim.x[,141]+ 
+  0.0001*sim.x[,151]+ 
+  0.0001*sim.x[,161]+ 
+  0.0001*sim.x[,171]+ 
+  0.0001*sim.x[,181]+ 
+  0.0001*sim.x[,191]+ 
+  0.0001*sim.x[,201]+ 
+  0.0001*sim.x[,211]+ 
+  0.0001*sim.x[,221]+ 
+  0.0001*sim.x[,231]+ 
+  0.0001*sim.x[,241]+ 
+  0.0001*sim.x[,251]+ 
+  0.0001*sim.x[,261]+ 
+  0.0001*sim.x[,271]+ 
+  0.0001*sim.x[,281]+ 
+  0.0001*sim.x[,291]+ 
+  0.0001*sim.x[,301]+ 
+  0.0001*sim.x[,311]+ 
+  0.0001*sim.x[,321]+ 
+  0.0001*sim.x[,331]+ 
+  0.0001*sim.x[,341]+ 
+  0.0001*sim.x[,351]+ 
+  0.0001*sim.x[,361]+ 
+  0.0001*sim.x[,371]+ 
+  0.0001*sim.x[,381]+ 
+  0.0001*sim.x[,391]+ 
+  0.0001*sim.x[,401]+ 
+  0.0001*sim.x[,411]+ 
+  0.0001*sim.x[,421]+ 
+  0.0001*sim.x[,431]+ 
+  0.0001*sim.x[,441]+ 
+  0.0001*sim.x[,451]+ 
+  0.0001*sim.x[,461]+ 
+  0.0001*sim.x[,471]+ 
+  0.0001*sim.x[,481]+ 
+  0.0001*sim.x[,491]+ 
+  0.0001*sim.x[,501]+ 
+  0.0001*sim.x[,511]+ 
+  0.0001*sim.x[,521]+ 
+  0.0001*sim.x[,531]+ 
+  0.0001*sim.x[,541]+ 
+  0.0001*sim.x[,551]+ 
+  0.0001*sim.x[,561]+ 
+  0.0001*sim.x[,571]+ 
+  0.0001*sim.x[,581]+ 
+  0.0001*sim.x[,591]+ 
+  0.0001*sim.x[,601]+ 
+  0.0001*sim.x[,611]+ 
+  0.0001*sim.x[,621]+ 
+  0.0001*sim.x[,631]+ 
+  0.0001*sim.x[,641]+ 
+  0.0001*sim.x[,651]+ 
+  0.0001*sim.x[,661]+ 
+  0.0001*sim.x[,671]+ 
+  0.0001*sim.x[,681]+ 
+  0.0001*sim.x[,691]+ 
+  0.0001*sim.x[,701]+ 
+  0.0001*sim.x[,711]+ 
+  0.0001*sim.x[,721]+ 
+  0.0001*sim.x[,731]+ 
+  0.0001*sim.x[,741]+ 
+  0.0001*sim.x[,751]+ 
+  0.0001*sim.x[,761]+ 
+  0.0001*sim.x[,771]+ 
+  0.0001*sim.x[,781]+ 
+  0.0001*sim.x[,791]+ 
+  0.0001*sim.x[,801]+ 
+  0.0001*sim.x[,811]+ 
+  0.0001*sim.x[,821]+ 
+  0.0001*sim.x[,831]+ 
+  0.0001*sim.x[,841]+ 
+  0.0001*sim.x[,851]+ 
+  0.0001*sim.x[,861]+ 
+  0.0001*sim.x[,871]+ 
+  0.0001*sim.x[,881]+ 
+  0.0001*sim.x[,891]+ 
+  0.0001*sim.x[,901]+ 
+  0.0001*sim.x[,911]+ 
+  0.0001*sim.x[,921]+ 
+  0.0001*sim.x[,931]+ 
+  0.0001*sim.x[,941]+ 
+  0.0001*sim.x[,951]+ 
+  0.0001*sim.x[,961]+ 
+  0.0001*sim.x[,971]+ 
+  0.0001*sim.x[,981]+ 
+  0.0001*sim.x[,991]+ 
+  0.0001*sim.x[,1001]+rnorm(2000, 0, 5)
+
+
+### need to output something that looks like a bimbam datafiles
 
 ```
 
 
 ```{r basic gemma, echo=FALSE}
+
+#### ERYN come back to this!!
+
+  system("./gemma.macosx -g Xsims.txt -notsnp -p ysims.txt -gk 1 -o relmatrix", wait=TRUE)
+  system("./gemma.macosx -g Xsims.txt -notsnp -p ysims.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 5000 -w 5000 -o sims", wait=TRUE)
+  system("./gemma.macosx -g Xsims.txt -notsnp -p ysims.txt -epm output/sims.param.txt -emu output/sims.log.txt -ebv output/sims.bv.txt -k output/relmatrix.cXX.txt -predict 1 -o sims.pheno", wait=TRUE)
+
+  hyp.params <- read.table("output/sims.hyp.txt", header=TRUE)
+  converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged")
+  pve<-c("PVE", mean(hyp.params$pve),quantile(hyp.params$pve, probs=c(0.5,0.025,0.975)))
+  ## pge -> proportion of genetic variance explained by major effect loci
+  pge <- c("PGE",mean(hyp.params$pge),quantile(hyp.params$pge, probs=c(0.5,0.025,0.975)))
+  ## n.gamma -> number of variants with major effect
+  n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975)))
+
+  params <- read.table("output/sims.param.txt",header=T,sep="\t")
+  params["eff"]<-abs(params$beta*params$gamma)
+
+  predicted_phenos <-  read.table("output/sims.pheno.prdt.txt", header=FALSE)
+
 
 ```
 
