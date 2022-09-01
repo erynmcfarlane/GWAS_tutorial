@@ -169,6 +169,7 @@ write.table(SNPs_bimbam, row.names = FALSE, col.names = FALSE, file="SNPs.txt")
 ```{r basic gemma, echo=FALSE}
 
 library(coda)
+library(ggplot2)
 
 ### quantitative trait
   system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE)
@@ -185,12 +186,7 @@ library(coda)
   n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975)))
 
   params <- read.table("output/y_quant.param.txt",header=T,sep="\t")
-  params["eff"]<-abs(params$beta*params$gamma)
-
-# Get variants with sparse effect size on phenotypes 
-# ==============================================================================
-# add sparse effect size (= beta * gamma) to data frame
-params["eff"]<-abs(params$beta*params$gamma)
+  params["eff"]<-abs(params$beta*params$gamma) # add sparse effect size (= beta * gamma) to data frame - need to understand why this is as it is!
 
 params.effects<-params[params$eff>0,]
 
@@ -211,11 +207,13 @@ params.pipsort<-params[order(-params$gamma),]
 
 # Show top 10 variants with highest PIP
 head(params.pipsort,13)
+plot<-ggplot(params, aes(as.factor(rs), gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))
 
-plot+geom_text(aes(label=ifelse(gamma>0.15, SNP, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
-###going to plot this again, but without sex and age because they're unnessecary 
-###exclude the one X chromosome SNP as well
-params_noFEs<-params[c(1:34464, 34466:34546), ]
+### do something so that this goes all the way up to PIP 1 - as of right now, none of these are over the threshold!
+
+plot+geom_text(aes(label=ifelse(gamma>0.15, rs, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
+ 
+
 
 png(file="PIP_manhattenplot_190421.png", width=6, height=3, units="in", res=300)
 plot_noFEs<-ggplot(params_noFEs, aes(as.factor(chr), gamma))+geom_jitter(aes(colour=as.factor(chr)), size=3)+scale_colour_manual(values=rep(c("grey", "skyblue"), 22))+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("Cervus linkage groups")+ylab("PIP")+theme(axis.title=element_text(size=14))
