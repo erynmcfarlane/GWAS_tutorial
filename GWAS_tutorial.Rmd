@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 set.seed(42)
 nloci<-10000  ## we will have data from nloci
 nind<-2000  ## we will have data from nind that were sampled from the true population
-sim.theta<-5  # high parameter means high polymorphism, must be positive and > zero
+sim.theta<-5  # high parameter means high polymorphism, must be positive and > zero, can be thought of as analygous to nucleotide polymorphism
 
 ## simulate allele frequencies at nloci number of loci, by random draws from a beta
 sim.p<-rbeta(nloci, sim.theta, sim.theta)
@@ -149,17 +149,34 @@ y_polygenic<-0.0001*sim.x[,11]+
 ### need to output something that looks like a bimbam datafiles
 
 ```
+```{r choose your own adventure}
+set.seed() ### put in your favourite number here!
 
+test_individuals<-sample(1:2000, 1000, replace=FALSE)
+test_snps<-sample(1:10000, 5000, replace=FALSE)
+
+write.table(y_cat[test_individuals], row.names=FALSE, col.names=FALSE, file="y_cat.txt")
+write.table(y_quant[test_individuals], row.names=FALSE, col.names=FALSE, file="y_quant.txt")
+write.table(y_polygenic[test_individuals], row.names=FALSE, col.names=FALSE, file="y_polygenic.txt")
+
+SNPs<-t(sim.x[test_individuals, test_snps])
+SNPs_bimbam<- cbind(1:length(rowMeans(SNPs)), rowMeans(SNPs), rowMeans(SNPs), SNPs) ### this is what makes it into a bimbam file we need
+  
+write.table(SNPs_bimbam, row.names = FALSE, col.names = FALSE, file="SNPs.txt")
+
+```
 
 ```{r basic gemma, echo=FALSE}
 
-#### ERYN come back to this!!
+library(coda)
 
-  system("./gemma.macosx -g Xsims.txt -notsnp -p ysims.txt -gk 1 -o relmatrix", wait=TRUE)
-  system("./gemma.macosx -g Xsims.txt -notsnp -p ysims.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 5000 -w 5000 -o sims", wait=TRUE)
-  system("./gemma.macosx -g Xsims.txt -notsnp -p ysims.txt -epm output/sims.param.txt -emu output/sims.log.txt -ebv output/sims.bv.txt -k output/relmatrix.cXX.txt -predict 1 -o sims.pheno", wait=TRUE)
+### quantitative trait
+  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE)
+  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 5000 -w 5000 -o y_quant", wait=TRUE)
+  
 
-  hyp.params <- read.table("output/sims.hyp.txt", header=TRUE)
+
+  hyp.params <- read.table("output/y_quant.hyp.txt", header=TRUE)
   converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged")
   pve<-c("PVE", mean(hyp.params$pve),quantile(hyp.params$pve, probs=c(0.5,0.025,0.975)))
   ## pge -> proportion of genetic variance explained by major effect loci
@@ -167,10 +184,44 @@ y_polygenic<-0.0001*sim.x[,11]+
   ## n.gamma -> number of variants with major effect
   n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975)))
 
-  params <- read.table("output/sims.param.txt",header=T,sep="\t")
+  params <- read.table("output/y_quant.param.txt",header=T,sep="\t")
   params["eff"]<-abs(params$beta*params$gamma)
 
-  predicted_phenos <-  read.table("output/sims.pheno.prdt.txt", header=FALSE)
+# Get variants with sparse effect size on phenotypes 
+# ==============================================================================
+# add sparse effect size (= beta * gamma) to data frame
+params["eff"]<-abs(params$beta*params$gamma)
+
+params.effects<-params[params$eff>0,]
+
+# show number of variants with measurable effect
+nrow(params.effects)
+
+
+params.effects.sort<-params.effects[order(-params.effects$eff),]
+
+
+# show top 10 variants with highest effect
+head(params.effects.sort, 11) 
+
+top01<-params.effects.sort[params.effects.sort$eff>quantile(params.effects.sort$eff,0.999),]
+
+# sort variants by descending PIP
+params.pipsort<-params[order(-params$gamma),]
+
+# Show top 10 variants with highest PIP
+head(params.pipsort,13)
+
+plot+geom_text(aes(label=ifelse(gamma>0.15, SNP, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
+###going to plot this again, but without sex and age because they're unnessecary 
+###exclude the one X chromosome SNP as well
+params_noFEs<-params[c(1:34464, 34466:34546), ]
+
+png(file="PIP_manhattenplot_190421.png", width=6, height=3, units="in", res=300)
+plot_noFEs<-ggplot(params_noFEs, aes(as.factor(chr), gamma))+geom_jitter(aes(colour=as.factor(chr)), size=3)+scale_colour_manual(values=rep(c("grey", "skyblue"), 22))+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("Cervus linkage groups")+ylab("PIP")+theme(axis.title=element_text(size=14))
+plot_noFEs
+dev.off()
+
 
 
 ```

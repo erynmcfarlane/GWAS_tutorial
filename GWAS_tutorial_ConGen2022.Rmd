@@ -32,11 +32,14 @@ Johnson et al. 2011 Mol Ecol, Johnson et al. 2013 Nature
 - one huge effect locus, explains 76% of the variation in horn size
 
 
-## How often do people find huge effect loci?
+## How often do people find huge effect loci using GWAS?
 
+ ![](Margres_2018_Tazzies.pdf){width=50%}
 - Darwin's finches
 - sticklebacks
-- 
+- atlantic salmon
+- Tasmanian devils face cancer 5 SNPs explain ~61% of variation in female survival
+
 ## What are the expectations for a GWAS?
 
 ![](Silva_flycatcher.pdf){width=90%}
@@ -45,6 +48,11 @@ Johnson et al. 2011 Mol Ecol, Johnson et al. 2013 Nature
 - 3 SNPs explaining ~3% of the variation in clutch size
 
 Silva et al. 2017 Heredity, Husby et al. 2014 Proc B
+
+## What are the expectations for a GWAS?
+
+- Rockman 2012 - All that's gold does not glitter.
+
 
 ## Some considerations for GWAS
 
@@ -76,6 +84,8 @@ Kardos 2015 MER, Gompert 2017 Mol Ecol
 - replicated samples of individuals (RepeatABEL, RIP)
 
 - Admixture mapping instead of within population GWAS
+
+- sample in closed populations (but know this limits generalizability)
 
 ## What is Admixture mapping?
 
