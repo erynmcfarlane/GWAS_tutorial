@@ -138,4 +138,17 @@ Kardos 2015 MER, Gompert 2017 Mol Ecol
 
 - ' Choose your own adventure'
 
+## What is BSLMM, and how does it work?
+
+-Bayesian Sparse Linear Mixed Model
+
+- Models two distributions for the genetic effects:
+  - polygenic distribution where we estimate the overall genetic variation
+  -sparse (or beta) distribution where we estimate the effect sizes for specific SNPs
+  - assumings a negligible effect size for all the other SNPs
+  
+- This sparse framework allows us to estimate effect sizes for only a few parameters, which helps with the p>>N problem that we have. 
+  - ask me about sparsity in general, it's a current research avenue of mine!
+
+- Gives n.gamma, or number of expected SNPs explaining the trait. 
 

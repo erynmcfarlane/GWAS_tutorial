@@ -14,6 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 2) Think about specific predictions for GWAS, and what we really expect to see for most of them
 3) Think critically about when GWAS are robust, and when they should be taken skeptically
 
+
+### Simulations
+The first section here is a simulation of 10000 SNPs and 2000 individuals. While there are definitely some much, much larger GWAS than this, even in wild systems, many studies are quite a bit smaller than this. Another thing to note is that I haven't simulated any chromosomes or LD structure. So these SNPs are all independent. That isn't really realistic for most GWAS. Finally, when I've simulated the traits (each a categorical trait, a quantitative trait with few causal loci and a quantitative trait with many causal loci), I have simulated causal loci. This is not expected to be the case for most GWAS - we're hoping to hit SNPs that are in LD with the causal regions, but rarely can we expect to actually genotype causal SNPs. This is why, in general, the linkage situation is so important. 
+
+While I've hard coded the simulations here, and I'm not going to talk a lot about how I've done them, I wanted to give everyone the code to be able to do this yourself. But the first chunk of code can be run without any additional input.
+
+
 ```{r simulations}
 ### This is from Alex Buerkle's Population Genetics lab notes
 ###simulate some data
@@ -154,6 +161,13 @@ y_polygenic<-0.0001*sim.x[,11]+ ###100 snps, larger error, quite small effect si
 
 ```
 
+### Choose your own adventure 
+
+So this is where I think most people will skip to. Please replace the set.seed with your own favourite number. This is down sampling us to 1000 individuals and only 5000 (unlinked remember) loci. From here, we will print out the data in the appropriate form to be able to run a BSLMM. 
+
+I kind of want everyone to try all of this themselves, and, please put some of the output into a googlesheet:
+https://docs.google.com/spreadsheets/d/1ad4gh54-JCtfFF15Z6wP74Tb_OXpR8-YRRgpUpY747I/edit?usp=sharing
+
 
 ```{r choose your own adventure}
 set.seed(42) ### put in your favourite number here!
@@ -173,7 +187,28 @@ SNPs_bimbam<- cbind(1:length(rowMeans(SNPs)), rowMeans(SNPs), rowMeans(SNPs), SN
 write.table(SNPs_bimbam, row.names = FALSE, col.names = FALSE, file="SNPs.txt")
 
 ```
-```{r gemma categorical trait, echo=FALSE}
+
+### GEMMA for the cateogorical trait
+
+Before we jump into GEMMA, I want to just quickly walk everyone through what it does. 
+The first step is to calculate a genomic relatedness matrix/kinship matrix. 
+The second step is to do the actual GWAS, while controlling for the relationship matrix
+Do note, that although I haven't either simulated or modelled this here, it is possible to put additional fixed effects in the BSLMM, and if that's something you're interested in, I can help you do it. 
+It's also possible to use BSLMM to do prediction of unmeasured individuals, and that's something else I can help with, but that we haven't done here. 
+
+I will also say that both the GEMMA manual, and the GEMMA google group are really good. There's a lot of excellent support to use this program, which is part of why I chose it for today.
+
+- g genotypes input (as a bimbam)
+- p phenotype file
+-gk specifies the type of relatedness matrix generate (1 is default)
+-o output
+
+-k input of relatedness matrix
+-bslmm 1 (run linear bslmm), 2 (run ridge regression), 3 probit BSLMM
+-s sampling steps
+-w burnin steps
+
+```{r gemma categorical trait}
 
 ### I didn't change a lot of the names of things, so this will over-write other sections
 library(coda)
@@ -181,8 +216,8 @@ library(ggplot2)
 
 ### categorical trait
   ### actually run Gemma first
-  system("~/gemma.macosx -g SNPs.txt -p y_cat.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
-  system("~/gemma.macosx -g SNPs.txt -p y_cat.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 50000 -o y_cat", wait=TRUE)
+  system("~/gemma -g SNPs.txt -p y_cat.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
+  system("~/gemma -g SNPs.txt -p y_cat.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 5000 -o y_cat", wait=TRUE)
   
   hyp.params <- read.table("output/y_cat.hyp.txt", header=TRUE)
   converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged") ### if not converged, run longer!
@@ -219,6 +254,8 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="in
 
 ```
 
+## GEMMA for the Quantitative Trait
+
 ```{r gemma quantitative trait, echo=FALSE}
 
 library(coda)
@@ -226,8 +263,8 @@ library(ggplot2)
 
 ### quantitative trait
   ### actually run Gemma first
-  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
-  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 50000 -o y_quant", wait=TRUE)
+  system("~/gemma -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
+  system("~/gemma -g SNPs.txt -p y_quant.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 5000 -o y_quant", wait=TRUE)
   
   hyp.params <- read.table("output/y_quant.hyp.txt", header=TRUE)
   converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged") ### if not converged, run longer!
@@ -266,7 +303,9 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNP, "")), hjust="inward",vjust="inw
 
 ```
 
-```{r gemma polygenic trait, echo=FALSE}
+## GEMMA for the Polygenic Trait
+
+```{r gemma polygenic trait}
 
 ### I didn't change a lot of the names of things, so this will over-write other sections
 library(coda)
@@ -275,7 +314,7 @@ library(ggplot2)
 ### categorical trait
   ### actually run Gemma first
   system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
-  system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 50000 -o y_polygenic", wait=TRUE)
+  system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 5000 -o y_polygenic", wait=TRUE)
   
   hyp.params <- read.table("output/y_polygenic.hyp.txt", header=TRUE)
   converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged") ### if not converged, run longer!
@@ -312,3 +351,7 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="in
 
 ```
 
+
+### Google sheet again:
+
+https://docs.google.com/spreadsheets/d/1ad4gh54-JCtfFF15Z6wP74Tb_OXpR8-YRRgpUpY747I/edit?usp=sharing
