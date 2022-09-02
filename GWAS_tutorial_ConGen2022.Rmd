@@ -1,11 +1,16 @@
 ---
 title: "How to GWAS - ConGen 2022"
 author: "Eryn McFarlane"
+
 date: "`r Sys.Date()`"
-output: beamer_presentation
-header-includes:
+output: 
+  beamer_presentation:
+    theme: "boxes"
+  header-includes:
   - \usepackage{wrapfig}
+
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -22,6 +27,13 @@ Genome Wide Association Study
 - g: the polygenic random effect (e.g. Kinship matrix)
 - e: the error term
 
+## Why do GWAS?
+
+- Understand the genetic architecture of phenotypic traits
+- link genotype to phenotype of individuals, extending quantitative genetics
+- be able to measure selection directly on genomic regions, using fitness data
+
+
 ## Soay Sheep Horns RXFP2 genotype
 
 Johnson et al. 2011 Mol Ecol, Johnson et al. 2013 Nature
@@ -34,43 +46,52 @@ Johnson et al. 2011 Mol Ecol, Johnson et al. 2013 Nature
 
 ## How often do people find huge effect loci using GWAS?
 
- ![](Margres_2018_Tazzies.pdf){width=50%}
-- Darwin's finches
-- sticklebacks
-- atlantic salmon
-- Tasmanian devils face cancer 5 SNPs explain ~61% of variation in female survival
+ ![](Margres_2018_Tazzies.pdf){width=50%}![](Barnson_2015_salmon.pdf){width=50%}
+
+
+- Tasmanian devils face cancer 5 SNPs explain ~61% of variation in female survival (Margres et al. 2018 Mol Ecol)
+
+- atlantic salmon - VGLL3 locus for delaying age of maturation (Barson et al. 2015 Nature)
 
 ## What are the expectations for a GWAS?
 
-![](Silva_flycatcher.pdf){width=90%}
+![](Silva_flycatcher.pdf){width=80%}
 
 - No significant SNPs for morphological traits
+
 - 3 SNPs explaining ~3% of the variation in clutch size
 
 Silva et al. 2017 Heredity, Husby et al. 2014 Proc B
 
 ## What are the expectations for a GWAS?
 
-- Rockman 2012 - All that's gold does not glitter.
+- Even if statistically significant loci are identified, they often explain a small proportion of the variation.
+
+- 'Missing Heritability'
+
+- not great for prediction of the trait
 
 
 ## Some considerations for GWAS
 
-\begin{minipage}[t]{.45\linewidth}\centering
+\begin{minipage}[t]{.4\linewidth}\centering
 
+\vspace{10mm}
 
 - heritability of the trait
 
-- genetic architecture of the trait (unknown!)
+- genetic architecture of the trait (often unknown!)
 
 - Linkage Disequilibrium
 
 - number of individuals sampled
 
+- allele frequency of causal loci (also unknown!)
 
-\end{minipage}
-\begin{minipage}[t]{.45\linewidth}
-```{r, echo=FALSE, fig.align='right', out.height='120%'}
+
+\end{minipage}\hspace{\fill}
+\begin{minipage}[t]{.5\linewidth}
+```{r, echo=FALSE, fig.align='right', out.height='90%', out.width='100%'}
 knitr::include_graphics("Gompert2017_Figure5.pdf")
 ```
 \end{minipage}
@@ -89,9 +110,32 @@ Kardos 2015 MER, Gompert 2017 Mol Ecol
 
 ## What is Admixture mapping?
 
+- special case of GWAS
+
+- GWAS on individuals with recombinate genotypes (from diverged species/populations interbreeding)
+
+- Allows for QTL mapping with fewer individuals and fewer markers because of long tracts of LD
+
 ## Deer Case study
+![](McFarlane_2021_DeerMap.pdf){width=80%}
+
+
+## Deer Case study
+
+![b](highland_red-sika_hybrid_KenMcInnes.jpg){width=45%}![b](McFarlane_2021_Manhatten.pdf){width=55%}
+
+
+- McFarlane & Pemberton 2021 G3
+
 
 ## So what are we doing today?
 
 - Simulated GWAS, using GEMMA
+
+- BSLMM in GEMMA (GEMMA can do LMM as well)
+
+- Simulated 10,000 SNPs, 2000 individuals
+
+- ' Choose your own adventure'
+
 

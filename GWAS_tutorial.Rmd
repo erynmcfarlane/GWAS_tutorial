@@ -38,13 +38,17 @@ str(sim.x)
 
 ### let's do one that's categorical and based on one SNP, like the horn traits in soay sheep
 
-y_cat<-as.factor(ifelse((5+0.3*sim.x[,15]+rnorm(2000, 0, 1))<4, 'no horn', ifelse((5+0.3*sim.x[,15]+rnorm(2000, 0, 1))>6.5, 'big horn', 'small horn'))) ### this is just a linear relationship between SNP 15 and this variable, plus error, that I've then put into categories
+y_cat<-5+0.7*sim.x[,1]+0.7*sim.x[,100]+0.7*sim.x[,1000]+0.7*sim.x[,1500]+rnorm(2000, 0, 1) ###large effect sizes, not a lot of error
 
-y_quant<-0.1*sim.x[,10]+0.1*sim.x[,20]+0.1*sim.x[,30]+0.1*sim.x[,40]-0.1*sim.x[,50]-0.1*sim.x[,60]-0.1*sim.x[,70]+0.1*sim.x[,80]+0.1*sim.x[,90]+0.1*sim.x[,100]+rnorm(2000, 0, 5)
+summary(lm(y_cat~sim.x[,1]+sim.x[,100]+sim.x[,1000]+sim.x[,1500]))
+
+summary(lm(y_cat~sim.x[,2]+sim.x[,102]+sim.x[,1002]+sim.x[,1502]))
+
+y_quant<-0.1*sim.x[,10]+0.1*sim.x[,20]+0.1*sim.x[,30]+0.1*sim.x[,40]-0.1*sim.x[,50]-0.1*sim.x[,60]-0.1*sim.x[,70]+0.1*sim.x[,80]+0.1*sim.x[,90]+0.1*sim.x[,100]+rnorm(2000, 0, 5) ###more snps, larger error, smaller effect sizes
 
 hist(y_quant)
 
-y_polygenic<-0.0001*sim.x[,11]+
+y_polygenic<-0.0001*sim.x[,11]+ ###100 snps, larger error, quite small effect sizes
    0.0001*sim.x[,21]+ 
   0.0001*sim.x[,31]+ 
   0.0001*sim.x[,41]+ 
@@ -149,8 +153,10 @@ y_polygenic<-0.0001*sim.x[,11]+
 ### need to output something that looks like a bimbam datafiles
 
 ```
+
+
 ```{r choose your own adventure}
-set.seed() ### put in your favourite number here!
+set.seed(42) ### put in your favourite number here!
 
 test_individuals<-sample(1:2000, 1000, replace=FALSE)
 test_snps<-sample(1:10000, 5000, replace=FALSE)
@@ -159,47 +165,90 @@ write.table(y_cat[test_individuals], row.names=FALSE, col.names=FALSE, file="y_c
 write.table(y_quant[test_individuals], row.names=FALSE, col.names=FALSE, file="y_quant.txt")
 write.table(y_polygenic[test_individuals], row.names=FALSE, col.names=FALSE, file="y_polygenic.txt")
 
-SNPs<-t(sim.x[test_individuals, test_snps])
+SNPs<-t(sim.x[test_individuals, test_snps]) ###this is to use the sub-sampled data only. 
+str(SNPs)
+
 SNPs_bimbam<- cbind(1:length(rowMeans(SNPs)), rowMeans(SNPs), rowMeans(SNPs), SNPs) ### this is what makes it into a bimbam file we need
-  
+
 write.table(SNPs_bimbam, row.names = FALSE, col.names = FALSE, file="SNPs.txt")
 
 ```
+```{r gemma categorical trait, echo=FALSE}
 
-```{r basic gemma, echo=FALSE}
-
+### I didn't change a lot of the names of things, so this will over-write other sections
 library(coda)
 library(ggplot2)
 
-### quantitative trait
-  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE)
-  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 5000 -w 5000 -o y_quant", wait=TRUE)
+### categorical trait
+  ### actually run Gemma first
+  system("~/gemma.macosx -g SNPs.txt -p y_cat.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
+  system("~/gemma.macosx -g SNPs.txt -p y_cat.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 50000 -o y_cat", wait=TRUE)
   
-
-
-  hyp.params <- read.table("output/y_quant.hyp.txt", header=TRUE)
-  converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged")
-  pve<-c("PVE", mean(hyp.params$pve),quantile(hyp.params$pve, probs=c(0.5,0.025,0.975)))
+  hyp.params <- read.table("output/y_cat.hyp.txt", header=TRUE)
+  converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged") ### if not converged, run longer!
+  converged
+  pve<-c("PVE", mean(hyp.params$pve),quantile(hyp.params$pve, probs=c(0.5,0.025,0.975))) ## proportion of 
   ## pge -> proportion of genetic variance explained by major effect loci
   pge <- c("PGE",mean(hyp.params$pge),quantile(hyp.params$pge, probs=c(0.5,0.025,0.975)))
   ## n.gamma -> number of variants with major effect
-  n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975)))
+  n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975))) ### gives the estimate of SNPs that have a sparse (large enough to measure) effect on the trait
 
-  params <- read.table("output/y_quant.param.txt",header=T,sep="\t")
-  params["eff"]<-abs(params$beta*params$gamma) # add sparse effect size (= beta * gamma) to data frame - need to understand why this is as it is!
+  params <- read.table("output/y_cat.param.txt",header=T,sep="\t")
+  params$SNPs<-paste("SNP", test_snps) ###giving the SNPs the names from the original simulations 
+  params["eff"]<-abs(params$beta*params$gamma) # add sparse effect size (= beta * gamma) to data frame
 
 params.effects<-params[params$eff>0,]
 
 # show number of variants with measurable effect
 nrow(params.effects)
-
-
 params.effects.sort<-params.effects[order(-params.effects$eff),]
-
-
 # show top 10 variants with highest effect
 head(params.effects.sort, 11) 
+top01<-params.effects.sort[params.effects.sort$eff>quantile(params.effects.sort$eff,0.999),]
+top01
+# sort variants by descending PIP
+params.pipsort<-params[order(-params$gamma),]
 
+# Show top 10 variants with highest PIP
+head(params.pipsort,13)
+plot<-ggplot(params, aes(rs, gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
+
+### do something so that this goes all the way up to PIP 1 - as of right now, none of these are over the threshold!
+
+plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
+
+```
+
+```{r gemma quantitative trait, echo=FALSE}
+
+library(coda)
+library(ggplot2)
+
+### quantitative trait
+  ### actually run Gemma first
+  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
+  system("~/gemma.macosx -g SNPs.txt -p y_quant.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 50000 -o y_quant", wait=TRUE)
+  
+  hyp.params <- read.table("output/y_quant.hyp.txt", header=TRUE)
+  converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged") ### if not converged, run longer!
+  converged
+  pve<-c("PVE", mean(hyp.params$pve),quantile(hyp.params$pve, probs=c(0.5,0.025,0.975))) ## proportion of 
+  ## pge -> proportion of genetic variance explained by major effect loci
+  pge <- c("PGE",mean(hyp.params$pge),quantile(hyp.params$pge, probs=c(0.5,0.025,0.975)))
+  ## n.gamma -> number of variants with major effect
+  n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975))) ### gives the estimate of SNPs that have a sparse (large enough to measure) effect on the trait
+
+  params <- read.table("output/y_quant.param.txt",header=T,sep="\t")
+  params$SNPs<-paste("SNP", test_snps)###giving the SNPs the names from the original simulations 
+  params["eff"]<-abs(params$beta*params$gamma) # add sparse effect size (= beta * gamma) to data frame
+
+params.effects<-params[params$eff>0,]
+
+# show number of variants with measurable effect
+nrow(params.effects)
+params.effects.sort<-params.effects[order(-params.effects$eff),]
+# show top 10 variants with highest effect
+head(params.effects.sort, 11) 
 top01<-params.effects.sort[params.effects.sort$eff>quantile(params.effects.sort$eff,0.999),]
 
 # sort variants by descending PIP
@@ -207,20 +256,59 @@ params.pipsort<-params[order(-params$gamma),]
 
 # Show top 10 variants with highest PIP
 head(params.pipsort,13)
-plot<-ggplot(params, aes(as.factor(rs), gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))
+plot<-ggplot(params, aes(as.factor(SNP), gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
 
 ### do something so that this goes all the way up to PIP 1 - as of right now, none of these are over the threshold!
 
-plot+geom_text(aes(label=ifelse(gamma>0.15, rs, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
- 
+plot+geom_text(aes(label=ifelse(gamma>0.15, SNP, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
 
 
-png(file="PIP_manhattenplot_190421.png", width=6, height=3, units="in", res=300)
-plot_noFEs<-ggplot(params_noFEs, aes(as.factor(chr), gamma))+geom_jitter(aes(colour=as.factor(chr)), size=3)+scale_colour_manual(values=rep(c("grey", "skyblue"), 22))+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("Cervus linkage groups")+ylab("PIP")+theme(axis.title=element_text(size=14))
-plot_noFEs
-dev.off()
 
+```
 
+```{r gemma polygenic trait, echo=FALSE}
+
+### I didn't change a lot of the names of things, so this will over-write other sections
+library(coda)
+library(ggplot2)
+
+### categorical trait
+  ### actually run Gemma first
+  system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
+  system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 50000 -o y_polygenic", wait=TRUE)
+  
+  hyp.params <- read.table("output/y_polygenic.hyp.txt", header=TRUE)
+  converged <- ifelse(heidel.diag(hyp.params$pve)[1,4]==1, "converged", "not_converged") ### if not converged, run longer!
+  converged
+  pve<-c("PVE", mean(hyp.params$pve),quantile(hyp.params$pve, probs=c(0.5,0.025,0.975))) ## proportion of 
+  ## pge -> proportion of genetic variance explained by major effect loci
+  pge <- c("PGE",mean(hyp.params$pge),quantile(hyp.params$pge, probs=c(0.5,0.025,0.975)))
+  ## n.gamma -> number of variants with major effect
+  n.gamma <- c("n.gamma",mean(hyp.params$n_gamma),quantile(hyp.params$n_gamma, probs=c(0.5,0.025,0.975))) ### gives the estimate of SNPs that have a sparse (large enough to measure) effect on the trait
+
+  params <- read.table("output/y_polygenic.param.txt",header=T,sep="\t")
+  params$SNPs<-paste("SNP", test_snps) ###giving the SNPs the names from the original simulations 
+  params["eff"]<-abs(params$beta*params$gamma) # add sparse effect size (= beta * gamma) to data frame
+
+params.effects<-params[params$eff>0,]
+
+# show number of variants with measurable effect
+nrow(params.effects)
+params.effects.sort<-params.effects[order(-params.effects$eff),]
+# show top 10 variants with highest effect
+head(params.effects.sort, 11) 
+top01<-params.effects.sort[params.effects.sort$eff>quantile(params.effects.sort$eff,0.999),]
+top01
+# sort variants by descending PIP
+params.pipsort<-params[order(-params$gamma),]
+
+# Show top 10 variants with highest PIP
+head(params.pipsort,13)
+plot<-ggplot(params, aes(rs, gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
+
+### do something so that this goes all the way up to PIP 1 - as of right now, none of these are over the threshold!
+
+plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
 
 ```
 
