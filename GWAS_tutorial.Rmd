@@ -17,8 +17,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Simulations
 The first section here is a simulation of 10000 SNPs and 2000 individuals. While there are definitely some much, much larger GWAS than this, even in wild systems, many studies are quite a bit smaller than this. Another thing to note is that I haven't simulated any chromosomes or LD structure. So these SNPs are all independent. That isn't really realistic for most GWAS. Finally, when I've simulated the traits (each a categorical trait, a quantitative trait with few causal loci and a quantitative trait with many causal loci), I have simulated causal loci. This is not expected to be the case for most GWAS - we're hoping to hit SNPs that are in LD with the causal regions, but rarely can we expect to actually genotype causal SNPs. This is why, in general, the linkage situation is so important. 
+Specifically, I've used drawn from a binomial distribution (rbinom on line 39, which has a probability drawn from a beta. The beta is symmetrical with a high parameter (alpha = beta = 5) which will give lots of polymorphisms for our SNPs.)
 
-While I've hard coded the simulations here, and I'm not going to talk a lot about how I've done them, I wanted to give everyone the code to be able to do this yourself. But the first chunk of code can be run without any additional input.
+
+Tl;dr I've hard coded the simulations here, and I'm not going to talk a lot about how I've done them, I wanted to give everyone the code to be able to do this yourself. But the first chunk of code can be run without any additional input.
 
 
 ```{r simulations}
@@ -36,7 +38,7 @@ hist(sim.p, breaks=seq(0,1,0.1))
 # simulate genotypes in the sample
 sim.x <- matrix(rbinom(nloci*nind, 2, prob=sim.p), nrow=nind, ncol=nloci) ### this gives us individuals in rows and snps in columns
 str(sim.x)
-### this is like the .ped set up, but not entirely. @ERYN - go back to this to make it the bimbam right away so it fits in gemma from the start.
+### this is like the .ped set up, but not entirely. 
 
 ###some things to note - these are assumed to be independent. This isn't realistic, there would certainly be LD
 ### I haven't simulated chromosomes, just allele frequencies
@@ -179,7 +181,7 @@ write.table(y_cat[test_individuals], row.names=FALSE, col.names=FALSE, file="y_c
 write.table(y_quant[test_individuals], row.names=FALSE, col.names=FALSE, file="y_quant.txt")
 write.table(y_polygenic[test_individuals], row.names=FALSE, col.names=FALSE, file="y_polygenic.txt")
 
-SNPs<-t(sim.x[test_individuals, test_snps]) ###this is to use the sub-sampled data only. 
+SNPs<-t(sim.x[test_individuals, test_snps]) ###this is to use the sub-sampled data only. the transposing of the matrix is what helps to put it into bimbam form. I've gotten stuck on this before!
 str(SNPs)
 
 SNPs_bimbam<- cbind(1:length(rowMeans(SNPs)), rowMeans(SNPs), rowMeans(SNPs), SNPs) ### this is what makes it into a bimbam file we need
