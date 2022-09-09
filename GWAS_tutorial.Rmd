@@ -351,6 +351,11 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="in
 
 ```
 
+### Questions to think about:
+- what is the typical sample size for your population? Is it possible to get repeated measures?
+- how related are the individuals that could be sampled? Does this high relatedness help or hurt the changes of finding markers of large effect?
+- What sort of trait are you interested in? Do you expect it to have a polygenic genomic architecture, and how could this change your sampling protocol?
+- What does immigration into and emigration from your population look like? How does a closed population affect GWAS predictions?
 
 ### Google sheet again:
 
