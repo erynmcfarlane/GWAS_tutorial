@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ### Learning outcomes of GWAS tutorial
-1) Understand what a GWAS is, and how to run it in GEMMA
+1) Understand what a GWAS is, and how to run it in gemma
 2) Think about specific predictions for GWAS, and what we really expect to see for most of them
 3) Think critically about when GWAS are robust, and when they should be taken skeptically
 
@@ -36,7 +36,7 @@ hist(sim.p, breaks=seq(0,1,0.1))
 # simulate genotypes in the sample
 sim.x <- matrix(rbinom(nloci*nind, 2, prob=sim.p), nrow=nind, ncol=nloci) ### this gives us individuals in rows and snps in columns
 str(sim.x)
-### this is like the .ped set up, but not entirely. @ERYN - go back to this to make it the bimbam right away so it fits in GEMMA from the start.
+### this is like the .ped set up, but not entirely. @ERYN - go back to this to make it the bimbam right away so it fits in gemma from the start.
 
 ###some things to note - these are assumed to be independent. This isn't realistic, there would certainly be LD
 ### I haven't simulated chromosomes, just allele frequencies
@@ -188,15 +188,15 @@ write.table(SNPs_bimbam, row.names = FALSE, col.names = FALSE, file="SNPs.txt")
 
 ```
 
-### GEMMA for the cateogorical trait
+### gemma for the cateogorical trait
 
-Before we jump into GEMMA, I want to just quickly walk everyone through what it does. 
+Before we jump into gemma, I want to just quickly walk everyone through what it does. 
 The first step is to calculate a genomic relatedness matrix/kinship matrix. 
 The second step is to do the actual GWAS, while controlling for the relationship matrix
 Do note, that although I haven't either simulated or modelled this here, it is possible to put additional fixed effects in the BSLMM, and if that's something you're interested in, I can help you do it. 
 It's also possible to use BSLMM to do prediction of unmeasured individuals, and that's something else I can help with, but that we haven't done here. 
 
-I will also say that both the GEMMA manual, and the GEMMA google group are really good. There's a lot of excellent support to use this program, which is part of why I chose it for today.
+I will also say that both the gemma manual, and the gemma google group are really good. There's a lot of excellent support to use this program, which is part of why I chose it for today.
 
 - g genotypes input (as a bimbam)
 - p phenotype file
@@ -215,7 +215,7 @@ library(coda)
 library(ggplot2)
 
 ### categorical trait
-  ### actually run Gemma first
+  ### actually run gemma first
   system("~/gemma -g SNPs.txt -p y_cat.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
   system("~/gemma -g SNPs.txt -p y_cat.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 5000 -o y_cat", wait=TRUE)
   
@@ -254,7 +254,7 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="in
 
 ```
 
-## GEMMA for the Quantitative Trait
+## gemma for the Quantitative Trait
 
 ```{r gemma quantitative trait, echo=FALSE}
 
@@ -262,7 +262,7 @@ library(coda)
 library(ggplot2)
 
 ### quantitative trait
-  ### actually run Gemma first
+  ### actually run gemma first
   system("~/gemma -g SNPs.txt -p y_quant.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
   system("~/gemma -g SNPs.txt -p y_quant.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 5000 -o y_quant", wait=TRUE)
   
@@ -293,17 +293,17 @@ params.pipsort<-params[order(-params$gamma),]
 
 # Show top 10 variants with highest PIP
 head(params.pipsort,13)
-plot<-ggplot(params, aes(as.factor(SNP), gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
+plot<-ggplot(params, aes(as.factor(SNPs), gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
 
 ### do something so that this goes all the way up to PIP 1 - as of right now, none of these are over the threshold!
 
-plot+geom_text(aes(label=ifelse(gamma>0.15, SNP, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
+plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="inward", size=5, nudge_x = 0.5)
 
 
 
 ```
 
-## GEMMA for the Polygenic Trait
+## gemma for the Polygenic Trait
 
 ```{r gemma polygenic trait}
 
@@ -312,7 +312,7 @@ library(coda)
 library(ggplot2)
 
 ### categorical trait
-  ### actually run Gemma first
+  ### actually run gemma first
   system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -gk 1 -o relmatrix", wait=TRUE) ### gets the relationship matrix
   system("~/gemma.macosx -g SNPs.txt -p y_polygenic.txt -k output/relmatrix.cXX.txt -bslmm 1 -s 50000 -w 5000 -o y_polygenic", wait=TRUE)
   
@@ -343,7 +343,7 @@ params.pipsort<-params[order(-params$gamma),]
 
 # Show top 10 variants with highest PIP
 head(params.pipsort,13)
-plot<-ggplot(params, aes(rs, gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
+plot<-ggplot(params, aes(SNPs, gamma))+geom_jitter(size=3)+theme_bw()+geom_hline(yintercept=0.10, linetype='dashed', colour="grey")+theme(legend.position='none')+xlab("SNPs")+ylab("PIP")+theme(axis.title=element_text(size=14))+ylim(0,1)
 
 ### do something so that this goes all the way up to PIP 1 - as of right now, none of these are over the threshold!
 
