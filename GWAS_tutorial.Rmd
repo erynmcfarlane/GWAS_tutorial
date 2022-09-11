@@ -362,3 +362,14 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="in
 ### Google sheet again:
 
 https://docs.google.com/spreadsheets/d/1ad4gh54-JCtfFF15Z6wP74Tb_OXpR8-YRRgpUpY747I/edit?usp=sharing
+
+### Other things that can be done, if there's interest, or if this workshop ends up being way too short
+- change the set.seed on line 175. Do this a couple of times (as we've been doing as a group). How does this change your results for each of the different genetic architectures?
+- vary the theta parameters on line 32, or make an alpha and beta theta to make the distribution asymmetrical. How does changing the underlying distribution, and thus the potential for polymorphism, change the recovery of true positive GWAS hits. What does this mean in, for example, inbreed populations?
+- vary the number of SNPs or the number of individuals retained line 177 and 178.
+- ofc, run this with your own biallelic data. What happens when you change the QC beforehand?
+- use the 'predict' function in GEMMA to see how well the data that you've selected can predict the phenotype of the data that have been left out. To do this, instead of eliminating individuals on line 177, set their phenotypes to 'NA'; the second gemma command looks something like gemma -g SNPs.txt -p y_polygenic.txt -epm output/sims.param.txt -emu output/sims.log.txt -ebv output/sims.bv.txt -k output/relmatrix.cXX.txt -predict 1 -o sims.pheno <- do note, I haven't tested this line, so it might not perfectly match the above tutorial.
+
+### Notes:
+ - https://visoca.github.io/popgenomworkshop-gwas_gemma/ is a longer, more in depth GWAS tutorial using GEMMA that I used when I first started with GEMMA, so there are lots of simularities between this tutorial and that one. I recommend that one as well, especially when working with admixed data
+ - As noted above, my simulations are based off those used by Alex Buerkle (formerly at UWyo) throughout his population genetics classes, so if you've ever taken a class from him (or one of his other disciples) they might seem very familiar. 
