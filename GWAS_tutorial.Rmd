@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ### Learning outcomes of GWAS tutorial
 1) Understand what a GWAS is, and how to run it in gemma
 2) Think about specific predictions for GWAS, and what we really expect to see for most of them
-3) Think critically about when GWAS are robust, and when they should be taken skeptically
+3) Think critically about when GWAS are robust, and when they should be taken skeptically, and why they're interesting to do anyway
 
 
 ### Simulations
