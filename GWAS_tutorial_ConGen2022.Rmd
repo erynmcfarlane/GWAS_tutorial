@@ -1,7 +1,6 @@
 ---
 title: "How to GWAS - ConGen 2022"
-author: "Eryn McFarlane"
-
+author: "Eryn McFarlane, University of Wyoming"
 date: "`r Sys.Date()`"
 output: 
   beamer_presentation:
