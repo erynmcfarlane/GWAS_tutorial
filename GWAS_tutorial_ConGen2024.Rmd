@@ -1,7 +1,7 @@
 ---
-title: "How to GWAS - Guelph Bioinformatics"
-author: "Eryn McFarlane, University of Wyoming"
-date: "February 28, 2023"
+title: "How to GWAS"
+author: "Eryn McFarlane, York University"
+date: "September 2, 2024"
 output: 
   beamer_presentation:
     theme: "boxes"
@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = FALSE)
 - PhD at Uppsala University
 - Postdoc 1 - University of Edinburgh
 - Postdoc 2 - University of Wyoming
+- Assistant Professor of Genetics - York University, Toronto, Canada
 
 
 ## What do I do?
@@ -86,6 +87,8 @@ Silva et al. 2017 Heredity, Husby et al. 2014 Proc B
 - 'Missing Heritability'
 
 - not great for prediction of the trait
+
+## Reducible vs irreducible error
 
 
 ## Some considerations for GWAS
