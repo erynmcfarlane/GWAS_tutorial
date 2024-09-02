@@ -91,6 +91,15 @@ Silva et al. 2017 Heredity, Husby et al. 2014 Proc B
 ## Reducible vs irreducible error
 
 
+ - Reducible error: variation in response that arises directly from causal predictors
+ - Irreducible error: variation in response that arises from other unmeasured, or stochastic processes (i.e. noise!)
+ 
+```{r, echo=FALSE, fig.align='right', out.height='90%', out.width='90%'}
+knitr::include_graphics("is_oos_plot.pdf")
+```
+                          
+Jahner et al. bioRxiv (https://www.biorxiv.org/content/10.1101/2024.03.15.585297v2.abstract)
+
 ## Some considerations for GWAS
 
 \begin{minipage}[t]{.4\linewidth}\centering

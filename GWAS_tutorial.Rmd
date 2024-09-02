@@ -168,7 +168,7 @@ y_polygenic<-0.0001*sim.x[,11]+ ###100 snps, larger error, quite small effect si
 So this is where I think most people will skip to. Please replace the set.seed with your own favourite number. This is down sampling us to 1000 individuals and only 5000 (unlinked remember) loci. From here, we will print out the data in the appropriate form to be able to run a BSLMM. 
 
 I kind of want everyone to try all of this themselves, and, please put some of the output into a googlesheet:
-https://docs.google.com/spreadsheets/d/1ad4gh54-JCtfFF15Z6wP74Tb_OXpR8-YRRgpUpY747I/edit?usp=sharing
+https://docs.google.com/spreadsheets/d/1W0ovcjzTr96GOBQDDSrGz6_xmCed1XHGtwjIqmAUEm0/edit?usp=sharing
 
 
 ```{r choose your own adventure}
@@ -361,7 +361,7 @@ plot+geom_text(aes(label=ifelse(gamma>0.15, SNPs, "")), hjust="inward",vjust="in
 
 ### Google sheet again:
 
-https://docs.google.com/spreadsheets/d/1ad4gh54-JCtfFF15Z6wP74Tb_OXpR8-YRRgpUpY747I/edit?usp=sharing
+https://docs.google.com/spreadsheets/d/1W0ovcjzTr96GOBQDDSrGz6_xmCed1XHGtwjIqmAUEm0/edit?usp=sharing
 
 ### Other things that can be done, if there's interest, or if this workshop ends up being way too short
 - change the set.seed on line 175. Do this a couple of times (as we've been doing as a group). How does this change your results for each of the different genetic architectures?
